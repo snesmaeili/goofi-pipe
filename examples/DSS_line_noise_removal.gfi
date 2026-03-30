@@ -11,9 +11,10 @@ nodes:
         autotrigger: true
         max_frequency: 30.0
         frequency_mode: updates-per-second
+        process_group: ''
     gui_kwargs:
       pos:
-      - -600
+      - -700
       - 0
       viewers:
         out:
@@ -23,7 +24,7 @@ nodes:
           collapsed: true
           log_scale_x: false
           log_scale_y: false
-  select0:
+  select_eeg:
     _type: Select
     category: array
     params:
@@ -37,10 +38,38 @@ nodes:
         autotrigger: false
         max_frequency: 30.0
         frequency_mode: updates-per-second
+        process_group: ''
     gui_kwargs:
       pos:
-      - -350
-      - 0
+      - -400
+      - -100
+      viewers:
+        out:
+          viewer_idx: 0
+          width: 175
+          height: 100
+          collapsed: true
+          log_scale_x: false
+          log_scale_y: false
+  select_event:
+    _type: Select
+    category: array
+    params:
+      select:
+        axis: 0
+        selection_mode: by_name
+        include: Trigger
+        exclude: ''
+        expand_asterisk: false
+      common:
+        autotrigger: false
+        max_frequency: 30.0
+        frequency_mode: updates-per-second
+        process_group: ''
+    gui_kwargs:
+      pos:
+      - -400
+      - 150
       viewers:
         out:
           viewer_idx: 0
@@ -55,8 +84,8 @@ nodes:
     params:
       dss:
         n_components: 3
-        freq_low: 8.0
-        freq_high: 12.0
+        freq_low: 4.0
+        freq_high: 8.0
         lambda_baseline: 0.995
         lambda_biased: 0.99
         solve_interval: 10
@@ -65,22 +94,69 @@ nodes:
         autotrigger: false
         max_frequency: 30.0
         frequency_mode: updates-per-second
+        process_group: ''
     gui_kwargs:
       pos:
-      - -50
-      - 0
+      - -135
+      - -93
       viewers:
         sources:
           viewer_idx: 0
           width: 175
           height: 100
-          collapsed: false
+          collapsed: true
           log_scale_x: false
           log_scale_y: false
         eigenvalues:
           viewer_idx: 0
           width: 175
           height: 100
+          collapsed: false
+          log_scale_x: false
+          log_scale_y: false
+  conditionerp0:
+    _type: ConditionERP
+    category: analysis
+    params:
+      conditions:
+        code_a: 131
+        code_b: 132
+        code_c: 140
+        label_a: HF
+        label_b: LF
+        label_c: Pseudo
+      epoch:
+        duration: 0.8
+        baseline: 0.2
+        reset: false
+      common:
+        autotrigger: false
+        max_frequency: 30.0
+        frequency_mode: updates-per-second
+        process_group: ''
+    gui_kwargs:
+      pos:
+      - 215
+      - 7
+      viewers:
+        erp_a:
+          viewer_idx: 0
+          width: 320
+          height: 220
+          collapsed: false
+          log_scale_x: false
+          log_scale_y: false
+        erp_b:
+          viewer_idx: 0
+          width: 350
+          height: 250
+          collapsed: false
+          log_scale_x: false
+          log_scale_y: false
+        erp_c:
+          viewer_idx: 0
+          width: 350
+          height: 250
           collapsed: false
           log_scale_x: false
           log_scale_y: false
@@ -97,10 +173,11 @@ nodes:
         autotrigger: false
         max_frequency: 30.0
         frequency_mode: updates-per-second
+        process_group: ''
     gui_kwargs:
       pos:
+      - -100
       - 250
-      - 0
       viewers:
         out:
           viewer_idx: 0
@@ -127,27 +204,40 @@ nodes:
         autotrigger: false
         max_frequency: 30.0
         frequency_mode: updates-per-second
+        process_group: ''
     gui_kwargs:
       pos:
-      - 550
-      - 0
+      - 250
+      - 250
       viewers:
         psd:
           viewer_idx: 0
-          width: 400
-          height: 300
+          width: 350
+          height: 250
           collapsed: false
           log_scale_x: false
           log_scale_y: true
 links:
 - node_out: lslclient0
-  node_in: select0
+  node_in: select_eeg
   slot_out: out
   slot_in: data
-- node_out: select0
+- node_out: lslclient0
+  node_in: select_event
+  slot_out: out
+  slot_in: data
+- node_out: select_eeg
   node_in: continuousdss0
   slot_out: out
   slot_in: data
+- node_out: select_event
+  node_in: conditionerp0
+  slot_out: out
+  slot_in: trigger
+- node_out: continuousdss0
+  node_in: conditionerp0
+  slot_out: sources
+  slot_in: signal
 - node_out: continuousdss0
   node_in: buffer0
   slot_out: sources
