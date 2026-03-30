@@ -1,0 +1,158 @@
+nodes:
+  lslclient0:
+    _type: LSLClient
+    category: inputs
+    params:
+      lsl_stream:
+        source_name: dsi24-replay-02-lexical
+        stream_name: ''
+        refresh: false
+      common:
+        autotrigger: true
+        max_frequency: 30.0
+        frequency_mode: updates-per-second
+    gui_kwargs:
+      pos:
+      - -600
+      - 0
+      viewers:
+        out:
+          viewer_idx: 0
+          width: 175
+          height: 100
+          collapsed: true
+          log_scale_x: false
+          log_scale_y: false
+  select0:
+    _type: Select
+    category: array
+    params:
+      select:
+        axis: 0
+        selection_mode: by_name
+        include: ''
+        exclude: Trigger, Event, CM, A1, A2, X1, X2, X3, Pz
+        expand_asterisk: false
+      common:
+        autotrigger: false
+        max_frequency: 30.0
+        frequency_mode: updates-per-second
+    gui_kwargs:
+      pos:
+      - -350
+      - 0
+      viewers:
+        out:
+          viewer_idx: 0
+          width: 175
+          height: 100
+          collapsed: true
+          log_scale_x: false
+          log_scale_y: false
+  continuousdss0:
+    _type: ContinuousDSS
+    category: signal
+    params:
+      dss:
+        n_components: 3
+        freq_low: 8.0
+        freq_high: 12.0
+        lambda_baseline: 0.995
+        lambda_biased: 0.99
+        solve_interval: 10
+        warmup_blocks: 50
+      common:
+        autotrigger: false
+        max_frequency: 30.0
+        frequency_mode: updates-per-second
+    gui_kwargs:
+      pos:
+      - -50
+      - 0
+      viewers:
+        sources:
+          viewer_idx: 0
+          width: 175
+          height: 100
+          collapsed: false
+          log_scale_x: false
+          log_scale_y: false
+        eigenvalues:
+          viewer_idx: 0
+          width: 175
+          height: 100
+          collapsed: false
+          log_scale_x: false
+          log_scale_y: false
+  buffer0:
+    _type: Buffer
+    category: signal
+    params:
+      buffer:
+        size: 2.0
+        axis: -1
+        unit: seconds
+        reset: false
+      common:
+        autotrigger: false
+        max_frequency: 30.0
+        frequency_mode: updates-per-second
+    gui_kwargs:
+      pos:
+      - 250
+      - 0
+      viewers:
+        out:
+          viewer_idx: 0
+          width: 175
+          height: 100
+          collapsed: true
+          log_scale_x: false
+          log_scale_y: false
+  psd0:
+    _type: PSD
+    category: signal
+    params:
+      psd:
+        method: welch
+        f_min: 1.0
+        f_max: 30.0
+        axis: -1
+      welch:
+        nperseg: 0.5
+        nperseg_unit: fraction
+        noverlap: 0.75
+        noverlap_unit: fraction_nperseg
+      common:
+        autotrigger: false
+        max_frequency: 30.0
+        frequency_mode: updates-per-second
+    gui_kwargs:
+      pos:
+      - 550
+      - 0
+      viewers:
+        psd:
+          viewer_idx: 0
+          width: 400
+          height: 300
+          collapsed: false
+          log_scale_x: false
+          log_scale_y: true
+links:
+- node_out: lslclient0
+  node_in: select0
+  slot_out: out
+  slot_in: data
+- node_out: select0
+  node_in: continuousdss0
+  slot_out: out
+  slot_in: data
+- node_out: continuousdss0
+  node_in: buffer0
+  slot_out: sources
+  slot_in: val
+- node_out: buffer0
+  node_in: psd0
+  slot_out: out
+  slot_in: data
