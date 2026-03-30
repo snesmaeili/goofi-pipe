@@ -11,6 +11,7 @@ nodes:
         autotrigger: true
         max_frequency: 30.0
         frequency_mode: updates-per-second
+        process_group: ''
     gui_kwargs:
       pos:
       - -900
@@ -37,6 +38,7 @@ nodes:
         autotrigger: false
         max_frequency: 30.0
         frequency_mode: updates-per-second
+        process_group: ''
     gui_kwargs:
       pos:
       - -600
@@ -63,6 +65,7 @@ nodes:
         autotrigger: false
         max_frequency: 30.0
         frequency_mode: updates-per-second
+        process_group: ''
     gui_kwargs:
       pos:
       - -600
@@ -91,10 +94,11 @@ nodes:
         autotrigger: false
         max_frequency: 30.0
         frequency_mode: updates-per-second
+        process_group: ''
     gui_kwargs:
       pos:
-      - -300
-      - -50
+      - -76
+      - -211
       viewers:
         sources:
           viewer_idx: 0
@@ -129,10 +133,11 @@ nodes:
         autotrigger: false
         max_frequency: 30.0
         frequency_mode: updates-per-second
+        process_group: ''
     gui_kwargs:
       pos:
-      - 50
-      - -300
+      - 219
+      - -854
       viewers:
         erp_a:
           viewer_idx: 0
@@ -168,6 +173,7 @@ nodes:
         autotrigger: false
         max_frequency: 10.0
         frequency_mode: updates-per-second
+        process_group: ''
     gui_kwargs:
       pos:
       - -300
@@ -194,6 +200,7 @@ nodes:
         autotrigger: false
         max_frequency: 5.0
         frequency_mode: updates-per-second
+        process_group: ''
     gui_kwargs:
       pos:
       - 50
@@ -233,6 +240,7 @@ nodes:
         autotrigger: false
         max_frequency: 30.0
         frequency_mode: updates-per-second
+        process_group: ''
     gui_kwargs:
       pos:
       - -300
@@ -263,10 +271,11 @@ nodes:
         autotrigger: false
         max_frequency: 30.0
         frequency_mode: updates-per-second
+        process_group: ''
     gui_kwargs:
       pos:
-      - 50
-      - 500
+      - -148
+      - 730
       viewers:
         psd:
           viewer_idx: 0
@@ -285,6 +294,7 @@ nodes:
         autotrigger: false
         max_frequency: 30.0
         frequency_mode: updates-per-second
+        process_group: ''
     gui_kwargs:
       pos:
       - 350
@@ -343,14 +353,15 @@ nodes:
         autotrigger: false
         max_frequency: 5.0
         frequency_mode: updates-per-second
+        process_group: ''
     gui_kwargs:
       pos:
-      - 650
-      - 200
+      - 572
+      - 45
       viewers:
         narrative:
           viewer_idx: 0
-          width: 400
+          width: 380
           height: 100
           collapsed: false
           log_scale_x: false
@@ -359,7 +370,7 @@ nodes:
           viewer_idx: 0
           width: 400
           height: 100
-          collapsed: true
+          collapsed: false
           log_scale_x: false
           log_scale_y: false
   textgeneration0:
@@ -369,28 +380,56 @@ nodes:
       text_generation:
         api_key: ''
         model: ollama-gemma2:2b
-        system_prompt: >-
-          You are a real-time neuroscience brain interpreter watching EEG signals
-          from a person doing a French lexical decision task (classifying words vs
-          pseudowords). Respond in 1-2 sentences only. Be scientific but accessible.
-          Describe what the brain is doing based on the measurements provided.
-        temperature: 0.7
-        max_tokens: 60
+        system_prompt: You are a real-time neuroscience brain interpreter watching
+          EEG signals from a person doing a French lexical decision task (classifying
+          words vs pseudowords). Respond in 1-2 sentences only. Be scientific but
+          accessible. Describe what the brain is doing based on the measurements provided.
+        temperature: 1.25
+        max_tokens: 1005
         max_conversation_length: 0
         save_conversation: ''
       common:
         autotrigger: false
         max_frequency: 1.0
         frequency_mode: updates-per-second
+        process_group: ''
     gui_kwargs:
       pos:
-      - 650
-      - 400
+      - 1110
+      - 68
       viewers:
         generated_text:
           viewer_idx: 0
-          width: 400
-          height: 120
+          width: 370
+          height: 100
+          collapsed: false
+          log_scale_x: false
+          log_scale_y: false
+  trialdetector0:
+    _type: TrialDetector
+    category: analysis
+    params:
+      codes:
+        code_a: 131
+        label_a: HF word
+        code_b: 132
+        label_b: LF word
+        code_c: 140
+        label_c: Pseudoword
+      common:
+        autotrigger: false
+        max_frequency: 30.0
+        frequency_mode: updates-per-second
+        process_group: ''
+    gui_kwargs:
+      pos:
+      - 572
+      - -200
+      viewers:
+        condition:
+          viewer_idx: 0
+          width: 500
+          height: 60
           collapsed: false
           log_scale_x: false
           log_scale_y: false
@@ -408,6 +447,10 @@ links:
   slot_out: out
   slot_in: data
 - node_out: select_trigger
+  node_in: trialdetector0
+  slot_out: out
+  slot_in: trigger
+- node_out: select_trigger
   node_in: conditionerp0
   slot_out: out
   slot_in: trigger
@@ -423,10 +466,18 @@ links:
   node_in: buffer_psd
   slot_out: sources
   slot_in: val
+- node_out: continuousdss0
+  node_in: brainstatenarrator0
+  slot_out: eigenvalues
+  slot_in: eigenvalues
 - node_out: buffer_phiid
   node_in: phiid0
   slot_out: out
   slot_in: matrix
+- node_out: phiid0
+  node_in: brainstatenarrator0
+  slot_out: inf_dyn
+  slot_in: inf_dyn
 - node_out: buffer_psd
   node_in: psd0
   slot_out: out
@@ -435,14 +486,6 @@ links:
   node_in: powerbandeeg0
   slot_out: psd
   slot_in: data
-- node_out: phiid0
-  node_in: brainstatenarrator0
-  slot_out: inf_dyn
-  slot_in: inf_dyn
-- node_out: continuousdss0
-  node_in: brainstatenarrator0
-  slot_out: eigenvalues
-  slot_in: eigenvalues
 - node_out: powerbandeeg0
   node_in: brainstatenarrator0
   slot_out: theta
