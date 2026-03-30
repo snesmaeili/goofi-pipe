@@ -102,10 +102,12 @@ class ContinuousDSS(Node):
             centered = block - mean[:, np.newaxis]
             sources = filters @ centered  # (n_comp, n_samples)
             eigenvalues = self._dss.eigenvalues
+            # Guard against numerical issues
+            if np.any(~np.isfinite(sources)):
+                sources = np.nan_to_num(sources, nan=0.0, posinf=0.0, neginf=0.0)
         else:
-            # Still in warmup
-            sources = np.zeros((n_comp, block.shape[1]))
-            eigenvalues = np.zeros(n_comp)
+            # Still in warmup — return None to avoid feeding zeros downstream
+            return None
 
         sources_meta = {
             "sfreq": sfreq,
