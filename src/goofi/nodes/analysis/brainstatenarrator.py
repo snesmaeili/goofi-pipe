@@ -73,30 +73,39 @@ class BrainStateNarrator(Node):
         state = {}
 
         # Information dynamics interpretation
-        if id_vals is not None and len(id_vals) >= 4:
-            # inf_dyn typically: [Storage, Copy, Transfer, Erasure]
-            labels = ["Storage", "Copy", "Transfer", "Erasure"]
-            dominant_idx = np.argmax(np.abs(id_vals[:4]))
+        # PhiID inf_dyn output shape: (6, n_channels) in one-vs-others mode
+        # Metrics: Storage, Copy, Transfer, Erasure, Downward causation, Upward causation
+        if id_vals is not None and id_vals.size >= 6:
+            if id_vals.ndim > 1:
+                # Average across channels to get one value per metric
+                metrics = id_vals.mean(axis=-1) if id_vals.shape[0] == 6 else id_vals.flatten()
+            else:
+                metrics = id_vals
+
+            labels = ["Storage", "Copy", "Transfer", "Erasure", "Down-causation", "Up-causation"]
+            n_metrics = min(len(labels), len(metrics))
+            vals = np.abs(metrics[:n_metrics])
+            dominant_idx = np.argmax(vals)
             dominant = labels[dominant_idx]
             state["dominant_dynamic"] = dominant
+            state["dynamics_vals"] = metrics[:n_metrics]
 
-            if dominant == "Storage":
-                parts.append("Memory encoding active - neural patterns are being maintained")
-            elif dominant == "Copy":
-                parts.append("Information broadcasting - signal spreading across components")
-            elif dominant == "Transfer":
-                parts.append("Cross-component communication - information flowing between sources")
-            elif dominant == "Erasure":
-                parts.append("Active suppression - neural patterns being cleared")
+            descriptions = {
+                "Storage": "Maintaining neural patterns across time",
+                "Copy": "Broadcasting information across spatial components",
+                "Transfer": "Directional information flow between components",
+                "Erasure": "Actively clearing or resetting neural patterns",
+                "Down-causation": "Whole-to-part causal influence (global constraining local)",
+                "Up-causation": "Part-to-whole causal influence (local driving global)",
+            }
+            parts.append(f"{dominant}: {descriptions.get(dominant, '')}")
 
-            ratios = np.abs(id_vals[:4])
-            total = ratios.sum()
+            total = vals.sum()
             if total > 0:
-                pcts = ratios / total * 100
-                parts.append(
-                    f"Dynamics: Storage {pcts[0]:.0f}% | Copy {pcts[1]:.0f}% | "
-                    f"Transfer {pcts[2]:.0f}% | Erasure {pcts[3]:.0f}%"
-                )
+                pcts = vals / total * 100
+                top3_idx = np.argsort(vals)[::-1][:3]
+                summary = " | ".join(f"{labels[i]} {pcts[i]:.0f}%" for i in top3_idx)
+                parts.append(f"[{summary}]")
 
         # DSS eigenvalue interpretation
         if ev_vals is not None:
@@ -171,16 +180,22 @@ class BrainStateNarrator(Node):
         lines.append("Current measurements:")
 
         dom = state.get("dominant_dynamic")
+        dyn_vals = state.get("dynamics_vals")
         if dom:
             lines.append(f"- Dominant information dynamic: {dom}")
+        if dyn_vals is not None:
+            dyn_labels = ["Storage", "Copy", "Transfer", "Erasure", "Down-causation", "Up-causation"]
+            for i, v in enumerate(dyn_vals):
+                if i < len(dyn_labels):
+                    lines.append(f"  {dyn_labels[i]}: {v:.4f}")
 
         ev = state.get("top_eigenvalue")
         if ev is not None:
-            lines.append(f"- Top DSS eigenvalue: {ev:.3f}")
+            lines.append(f"- Top DSS eigenvalue: {ev:.3f} (higher = stronger spatial pattern in theta-alpha band)")
 
         ta = state.get("theta_alpha_ratio")
         if ta is not None:
-            lines.append(f"- Theta/alpha ratio: {ta:.2f}")
+            lines.append(f"- Theta/alpha power ratio: {ta:.2f} (>1.0 = high cognitive load, <0.5 = relaxed)")
 
         lines.append("")
         lines.append("Interpretation:")

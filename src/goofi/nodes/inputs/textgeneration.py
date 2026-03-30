@@ -200,7 +200,7 @@ class TextGeneration(Node):
                 print("Using GOOGLE_API_KEY from environment variables.")
             self.api_key = environ.get("GOOGLE_API_KEY", self.api_key)
 
-        if not self.api_key and not model.startswith("local-"):
+        if not self.api_key and not model.startswith("local-") and not model.startswith("ollama-"):
             raise ValueError(f"API key for {model} not found in environment variables or input parameters.")
         print(f"Loaded API key for {model}.")
 

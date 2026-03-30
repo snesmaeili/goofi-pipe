@@ -1,0 +1,457 @@
+nodes:
+  lslclient0:
+    _type: LSLClient
+    category: inputs
+    params:
+      lsl_stream:
+        source_name: dsi24-replay-02-lexical
+        stream_name: ''
+        refresh: false
+      common:
+        autotrigger: true
+        max_frequency: 30.0
+        frequency_mode: updates-per-second
+    gui_kwargs:
+      pos:
+      - -900
+      - 0
+      viewers:
+        out:
+          viewer_idx: 0
+          width: 175
+          height: 100
+          collapsed: true
+          log_scale_x: false
+          log_scale_y: false
+  select_eeg:
+    _type: Select
+    category: array
+    params:
+      select:
+        axis: 0
+        selection_mode: by_name
+        include: ''
+        exclude: Trigger, Event, CM, A1, A2, X1, X2, X3, Pz
+        expand_asterisk: false
+      common:
+        autotrigger: false
+        max_frequency: 30.0
+        frequency_mode: updates-per-second
+    gui_kwargs:
+      pos:
+      - -600
+      - -50
+      viewers:
+        out:
+          viewer_idx: 0
+          width: 175
+          height: 100
+          collapsed: true
+          log_scale_x: false
+          log_scale_y: false
+  select_trigger:
+    _type: Select
+    category: array
+    params:
+      select:
+        axis: 0
+        selection_mode: by_name
+        include: Trigger
+        exclude: ''
+        expand_asterisk: false
+      common:
+        autotrigger: false
+        max_frequency: 30.0
+        frequency_mode: updates-per-second
+    gui_kwargs:
+      pos:
+      - -600
+      - 200
+      viewers:
+        out:
+          viewer_idx: 0
+          width: 175
+          height: 100
+          collapsed: true
+          log_scale_x: false
+          log_scale_y: false
+  continuousdss0:
+    _type: ContinuousDSS
+    category: signal
+    params:
+      dss:
+        n_components: 3
+        freq_low: 4.0
+        freq_high: 12.0
+        lambda_baseline: 0.995
+        lambda_biased: 0.99
+        solve_interval: 10
+        warmup_blocks: 50
+      common:
+        autotrigger: false
+        max_frequency: 30.0
+        frequency_mode: updates-per-second
+    gui_kwargs:
+      pos:
+      - -300
+      - -50
+      viewers:
+        sources:
+          viewer_idx: 0
+          width: 175
+          height: 100
+          collapsed: true
+          log_scale_x: false
+          log_scale_y: false
+        eigenvalues:
+          viewer_idx: 0
+          width: 150
+          height: 80
+          collapsed: false
+          log_scale_x: false
+          log_scale_y: false
+  conditionerp0:
+    _type: ConditionERP
+    category: analysis
+    params:
+      conditions:
+        code_a: 131
+        code_b: 132
+        code_c: 140
+        label_a: HF
+        label_b: LF
+        label_c: Pseudo
+      epoch:
+        duration: 0.8
+        baseline: 0.2
+        reset: false
+      common:
+        autotrigger: false
+        max_frequency: 30.0
+        frequency_mode: updates-per-second
+    gui_kwargs:
+      pos:
+      - 50
+      - -300
+      viewers:
+        erp_a:
+          viewer_idx: 0
+          width: 250
+          height: 150
+          collapsed: false
+          log_scale_x: false
+          log_scale_y: false
+        erp_b:
+          viewer_idx: 0
+          width: 250
+          height: 150
+          collapsed: false
+          log_scale_x: false
+          log_scale_y: false
+        erp_c:
+          viewer_idx: 0
+          width: 250
+          height: 150
+          collapsed: false
+          log_scale_x: false
+          log_scale_y: false
+  buffer_phiid:
+    _type: Buffer
+    category: signal
+    params:
+      buffer:
+        size: 500.0
+        axis: -1
+        unit: samples
+        reset: false
+      common:
+        autotrigger: false
+        max_frequency: 10.0
+        frequency_mode: updates-per-second
+    gui_kwargs:
+      pos:
+      - -300
+      - 250
+      viewers:
+        out:
+          viewer_idx: 0
+          width: 175
+          height: 100
+          collapsed: true
+          log_scale_x: false
+          log_scale_y: false
+  phiid0:
+    _type: PhiID
+    category: analysis
+    params:
+      PhiID:
+        tau: 5.0
+        kind: gaussian
+        redudancy: MMI
+        mode: one-vs-others
+        tgt_index: 0
+      common:
+        autotrigger: false
+        max_frequency: 5.0
+        frequency_mode: updates-per-second
+    gui_kwargs:
+      pos:
+      - 50
+      - 250
+      viewers:
+        PhiID:
+          viewer_idx: 0
+          width: 250
+          height: 150
+          collapsed: false
+          log_scale_x: false
+          log_scale_y: false
+        inf_dyn:
+          viewer_idx: 0
+          width: 250
+          height: 150
+          collapsed: false
+          log_scale_x: false
+          log_scale_y: false
+        IIT:
+          viewer_idx: 0
+          width: 250
+          height: 150
+          collapsed: false
+          log_scale_x: false
+          log_scale_y: false
+  buffer_psd:
+    _type: Buffer
+    category: signal
+    params:
+      buffer:
+        size: 2.0
+        axis: -1
+        unit: seconds
+        reset: false
+      common:
+        autotrigger: false
+        max_frequency: 30.0
+        frequency_mode: updates-per-second
+    gui_kwargs:
+      pos:
+      - -300
+      - 500
+      viewers:
+        out:
+          viewer_idx: 0
+          width: 175
+          height: 100
+          collapsed: true
+          log_scale_x: false
+          log_scale_y: false
+  psd0:
+    _type: PSD
+    category: signal
+    params:
+      psd:
+        method: welch
+        f_min: 1.0
+        f_max: 30.0
+        axis: -1
+      welch:
+        nperseg: 0.5
+        nperseg_unit: fraction
+        noverlap: 0.75
+        noverlap_unit: fraction_nperseg
+      common:
+        autotrigger: false
+        max_frequency: 30.0
+        frequency_mode: updates-per-second
+    gui_kwargs:
+      pos:
+      - 50
+      - 500
+      viewers:
+        psd:
+          viewer_idx: 0
+          width: 250
+          height: 150
+          collapsed: false
+          log_scale_x: false
+          log_scale_y: true
+  powerbandeeg0:
+    _type: PowerBandEEG
+    category: analysis
+    params:
+      powerband:
+        power_type: relative
+      common:
+        autotrigger: false
+        max_frequency: 30.0
+        frequency_mode: updates-per-second
+    gui_kwargs:
+      pos:
+      - 350
+      - 500
+      viewers:
+        delta:
+          viewer_idx: 0
+          width: 150
+          height: 60
+          collapsed: false
+          log_scale_x: false
+          log_scale_y: false
+        theta:
+          viewer_idx: 0
+          width: 150
+          height: 60
+          collapsed: false
+          log_scale_x: false
+          log_scale_y: false
+        alpha:
+          viewer_idx: 0
+          width: 150
+          height: 60
+          collapsed: false
+          log_scale_x: false
+          log_scale_y: false
+        lowbeta:
+          viewer_idx: 0
+          width: 150
+          height: 60
+          collapsed: true
+          log_scale_x: false
+          log_scale_y: false
+        highbeta:
+          viewer_idx: 0
+          width: 150
+          height: 60
+          collapsed: true
+          log_scale_x: false
+          log_scale_y: false
+        gamma:
+          viewer_idx: 0
+          width: 150
+          height: 60
+          collapsed: true
+          log_scale_x: false
+          log_scale_y: false
+  brainstatenarrator0:
+    _type: BrainStateNarrator
+    category: analysis
+    params:
+      narrator:
+        update_interval: 3
+        system_context: lexical_decision
+      common:
+        autotrigger: false
+        max_frequency: 5.0
+        frequency_mode: updates-per-second
+    gui_kwargs:
+      pos:
+      - 650
+      - 200
+      viewers:
+        narrative:
+          viewer_idx: 0
+          width: 400
+          height: 100
+          collapsed: false
+          log_scale_x: false
+          log_scale_y: false
+        llm_prompt:
+          viewer_idx: 0
+          width: 400
+          height: 100
+          collapsed: true
+          log_scale_x: false
+          log_scale_y: false
+  textgeneration0:
+    _type: TextGeneration
+    category: inputs
+    params:
+      text_generation:
+        api_key: ''
+        model: ollama-gemma2:2b
+        system_prompt: >-
+          You are a real-time neuroscience brain interpreter watching EEG signals
+          from a person doing a French lexical decision task (classifying words vs
+          pseudowords). Respond in 1-2 sentences only. Be scientific but accessible.
+          Describe what the brain is doing based on the measurements provided.
+        temperature: 0.7
+        max_tokens: 60
+        max_conversation_length: 0
+        save_conversation: ''
+      common:
+        autotrigger: false
+        max_frequency: 1.0
+        frequency_mode: updates-per-second
+    gui_kwargs:
+      pos:
+      - 650
+      - 400
+      viewers:
+        generated_text:
+          viewer_idx: 0
+          width: 400
+          height: 120
+          collapsed: false
+          log_scale_x: false
+          log_scale_y: false
+links:
+- node_out: lslclient0
+  node_in: select_eeg
+  slot_out: out
+  slot_in: data
+- node_out: lslclient0
+  node_in: select_trigger
+  slot_out: out
+  slot_in: data
+- node_out: select_eeg
+  node_in: continuousdss0
+  slot_out: out
+  slot_in: data
+- node_out: select_trigger
+  node_in: conditionerp0
+  slot_out: out
+  slot_in: trigger
+- node_out: continuousdss0
+  node_in: conditionerp0
+  slot_out: sources
+  slot_in: signal
+- node_out: continuousdss0
+  node_in: buffer_phiid
+  slot_out: sources
+  slot_in: val
+- node_out: continuousdss0
+  node_in: buffer_psd
+  slot_out: sources
+  slot_in: val
+- node_out: buffer_phiid
+  node_in: phiid0
+  slot_out: out
+  slot_in: matrix
+- node_out: buffer_psd
+  node_in: psd0
+  slot_out: out
+  slot_in: data
+- node_out: psd0
+  node_in: powerbandeeg0
+  slot_out: psd
+  slot_in: data
+- node_out: phiid0
+  node_in: brainstatenarrator0
+  slot_out: inf_dyn
+  slot_in: inf_dyn
+- node_out: continuousdss0
+  node_in: brainstatenarrator0
+  slot_out: eigenvalues
+  slot_in: eigenvalues
+- node_out: powerbandeeg0
+  node_in: brainstatenarrator0
+  slot_out: theta
+  slot_in: theta
+- node_out: powerbandeeg0
+  node_in: brainstatenarrator0
+  slot_out: alpha
+  slot_in: alpha
+- node_out: brainstatenarrator0
+  node_in: textgeneration0
+  slot_out: llm_prompt
+  slot_in: prompt
